@@ -29,6 +29,41 @@ import { styled } from "@mui/material/styles";
 // Expense (now Earning) categories – you can adjust or rename as needed
 const categories = ["Rent", "Software Licenses", "Utilities", "Salaries", "Marketing", "Other"];
 
+// ─── Define CustomButton BEFORE using it in tableData ─────────────────────
+const CustomButton = styled("button")({
+  padding: "10px 25px",
+  border: "unset",
+  borderRadius: "15px",
+  color: "#212121",
+  zIndex: 1,
+  background: "#e8e8e8",
+  position: "relative",
+  fontWeight: 1000,
+  fontSize: "17px",
+  boxShadow: "4px 8px 19px -3px rgba(0,0,0,0.27)",
+  transition: "all 250ms",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: 0,
+    borderRadius: "15px",
+    backgroundColor: "#212121",
+    zIndex: -1,
+    boxShadow: "4px 8px 19px -3px rgba(0,0,0,0.27)",
+    transition: "all 250ms",
+  },
+  "&:hover": {
+    color: "#e8e8e8",
+  },
+  "&:hover::before": {
+    width: "100%",
+  },
+});
+
 const ManageEarnings = () => {
   // Dialog and data states
   const [open, setOpen] = useState(false); // For Add/Edit form
@@ -172,7 +207,7 @@ const ManageEarnings = () => {
     },
   };
 
-  // Define tableData for DataTable component (similar to ManageProject)
+  // Define tableData for DataTable component (if needed)
   const tableData = {
     columns: [
       { Header: "earning", accessor: "earning", width: "30%", align: "left" },
@@ -213,41 +248,6 @@ const ManageEarnings = () => {
     })),
   };
 
-  // Custom styled button using Material UI styled API (same as in ManageProject)
-  const CustomButton = styled("button")({
-    padding: "10px 25px",
-    border: "unset",
-    borderRadius: "15px",
-    color: "#212121",
-    zIndex: 1,
-    background: "#e8e8e8",
-    position: "relative",
-    fontWeight: 1000,
-    fontSize: "17px",
-    boxShadow: "4px 8px 19px -3px rgba(0,0,0,0.27)",
-    transition: "all 250ms",
-    overflow: "hidden",
-    "&::before": {
-      content: '""',
-      position: "absolute",
-      top: 0,
-      left: 0,
-      height: "100%",
-      width: 0,
-      borderRadius: "15px",
-      backgroundColor: "#212121",
-      zIndex: -1,
-      boxShadow: "4px 8px 19px -3px rgba(0,0,0,0.27)",
-      transition: "all 250ms",
-    },
-    "&:hover": {
-      color: "#e8e8e8",
-    },
-    "&:hover::before": {
-      width: "100%",
-    },
-  });
-
   return (
     <MDBox
       p={3}
@@ -281,6 +281,7 @@ const ManageEarnings = () => {
               </MDTypography>
             </MDBox>
             <MDBox pt={3} pb={2} px={2}>
+              {/* You might consider using MDButton here if "gradient" is a custom variant */}
               <Button variant="gradient" color="info" onClick={handleClickOpen} sx={{ mb: 2 }}>
                 Add Earnings
               </Button>
