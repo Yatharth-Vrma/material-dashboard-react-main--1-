@@ -1,31 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Grid,
   Card,
-  CardContent,
-  CardActions,
-  Typography,
-  MenuItem,
-  Checkbox,
-  FormControlLabel,
-  InputAdornment,
-  Box,
-  Chip,
 } from "@mui/material";
-import { db } from "../manage-employee/firebase";
-import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDButton from "components/MDButton";
-import Icon from "@mui/material/Icon";
-import { styled } from "@mui/material/styles";
+import DataTable from "examples/Tables/DataTable";
+import { db } from "../manage-employee/firebase";
+import { collection, onSnapshot } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 
+<<<<<<< HEAD
 // Expense (now Earning) categories – you can adjust or rename as needed
 const categories = ["Rent", "Software Licenses", "Utilities", "Salaries", "Marketing", "Other"];
 
@@ -69,37 +55,39 @@ const ManageEarnings = () => {
   const [open, setOpen] = useState(false); // For Add/Edit form
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+=======
+const ManageEarning = () => {
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
   const [earnings, setEarnings] = useState([]);
-  const [editingEarning, setEditingEarning] = useState(null);
-  const [deleteId, setDeleteId] = useState(null);
+  const [selectedEarning, setSelectedEarning] = useState(null);
+  const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
 
-  // Form states (for Earnings)
-  const [earningId, setEarningId] = useState("");
-  const [category, setCategory] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [accountId, setAccountId] = useState("");
-  const [recurring, setRecurring] = useState(false);
-
-  // Helper function to format Firestore Timestamps (if applicable)
-  const formatTimestamp = (timestamp) => {
-    if (timestamp && typeof timestamp.toDate === "function") {
-      return timestamp.toDate().toLocaleDateString();
-    }
-    return timestamp;
-  };
-
-  // Fetch earnings from Firestore on mount
   useEffect(() => {
-    const fetchEarnings = async () => {
-      const querySnapshot = await getDocs(collection(db, "earnings"));
-      setEarnings(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    };
-    fetchEarnings();
+    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
+      const completedEarnings = snapshot.docs
+        .filter((doc) => doc.data().status?.toLowerCase() === "completed")
+        .map((doc) => {
+          const data = doc.data();
+          return {
+            earningId: `E-${Math.floor(10000 + Math.random() * 90000)}`,
+            clientId: data.clientId || "N/A",
+            accountId: data.accountId || "N/A",
+            amount: data.revenueGenerated || 0,
+            date: data.endDate || "N/A"
+              ? data.endDate instanceof Timestamp
+                ? data.endDate.toDate().toLocaleDateString()
+                : new Date(data.endDate).toLocaleDateString()
+              : "N/A",
+            projectId: data.projectId || "N/A",
+          };
+        });
+      setEarnings(completedEarnings);
+    });
+    
+    return () => unsubscribe();
   }, []);
 
+<<<<<<< HEAD
   // Open Add/Edit dialog and reset form fields
   const handleClickOpen = () => {
     setOpen(true);
@@ -208,295 +196,83 @@ const ManageEarnings = () => {
   };
 
   // Define tableData for DataTable component (if needed)
+=======
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
   const tableData = {
     columns: [
-      { Header: "earning", accessor: "earning", width: "30%", align: "left" },
-      { Header: "amount", accessor: "amount", align: "left" },
-      { Header: "date", accessor: "date", align: "center" },
-      { Header: "description", accessor: "description", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+      { Header: "Earning ID", accessor: "earningId", align: "left" },
+      { Header: "Client ID", accessor: "clientId", align: "left" },
+      { Header: "Amount", accessor: "amount", align: "left" },
+      { Header: "Date", accessor: "date", align: "left" },
+      { Header: "Project ID", accessor: "projectId", align: "left" },
+      { Header: "Account ID", accessor: "accountId", align: "left" },
+      { Header: "Action", accessor: "action", align: "center" },
     ],
     rows: earnings.map((earning) => ({
-      earning: (
-        <MDTypography variant="button" fontWeight="medium" display="block">
-          {earning.category} <br />
-          <Typography variant="caption" color="textSecondary" display="block">
-            ID: {earning.earningId}
-          </Typography>
-        </MDTypography>
-      ),
-      amount: (
-        <MDTypography variant="button" color="text" fontWeight="medium">
-          ${earning.amount}
-        </MDTypography>
-      ),
-      date: (
-        <MDTypography variant="caption" color="text" fontWeight="medium">
-          {earning.date?.toDate ? earning.date.toDate().toLocaleDateString() : earning.date}
-        </MDTypography>
-      ),
-      description: (
-        <MDTypography variant="caption" color="text" fontWeight="medium">
-          {earning.description}
-        </MDTypography>
-      ),
+      earningId: earning.earningId,
+      clientId: earning.clientId,
+      amount: `$${earning.amount}`, // Display amount in currency format
+      date: earning.date,
+      projectId: earning.projectId,
+      accountId: earning.accountId,
       action: (
         <MDBox display="flex" justifyContent="center">
-          <CustomButton onClick={() => handleEdit(earning)}>View Details</CustomButton>
+          <Button
+            variant="contained"
+            color="info"
+            onClick={() => {
+              setSelectedEarning(earning);
+              setViewDetailsOpen(true);
+            }}
+          >
+            View Details
+          </Button>
         </MDBox>
       ),
     })),
   };
 
   return (
-    <MDBox
-      p={3}
-      sx={{
-        marginLeft: "250px",
-        marginTop: "30px",
-        width: "calc(100% - 250px)",
-      }}
-    >
+    <MDBox p={3} sx={{ marginLeft: "250px", marginTop: "30px", width: "calc(100% - 250px)" }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Card
-            sx={{
-              marginTop: "20px",
-              borderRadius: "12px",
-              overflow: "visible",
-            }}
-          >
+          <Card sx={{ marginTop: "20px", borderRadius: "12px", overflow: "visible" }}>
             <MDBox
-              mx={0}
-              mt={-4.5}
+              mx={2}
+              mt={-3}
               py={3}
-              px={3}
+              px={2}
               variant="gradient"
               bgColor="info"
               borderRadius="lg"
               coloredShadow="info"
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <MDTypography variant="h6" color="white">
-                Earnings Management
-              </MDTypography>
+              <MDTypography variant="h6" color="white">Earnings</MDTypography>
             </MDBox>
             <MDBox pt={3} pb={2} px={2}>
+<<<<<<< HEAD
               {/* You might consider using MDButton here if "gradient" is a custom variant */}
               <Button variant="gradient" color="info" onClick={handleClickOpen} sx={{ mb: 2 }}>
                 Add Earnings
               </Button>
+=======
+              <DataTable
+                table={tableData}
+                isSorted={false}
+                entriesPerPage={false}
+                showTotalEntries={false}
+                noEndBorder
+              />
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
             </MDBox>
-
-            {/* Earnings Cards Grid */}
-            <Grid container spacing={3} sx={{ padding: "16px" }}>
-              {earnings.map((earning) => (
-                <Grid item xs={12} sm={6} md={12} key={earning.id}>
-                  <Card
-                    sx={{
-                      background: "linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)",
-                      borderRadius: "12px",
-                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                      padding: "20px",
-                      transition: "0.3s ease-in-out",
-                      "&:hover": {
-                        boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
-                        transform: "scale(1.02)",
-                      },
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                        {earning.category}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Earning ID:</strong> {earning.earningId}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Amount:</strong> ${earning.amount}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Date:</strong>{" "}
-                        {earning.date?.toDate
-                          ? earning.date.toDate().toLocaleDateString()
-                          : earning.date}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Description:</strong> {earning.description}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Project ID:</strong> {earning.projectId || "N/A"}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Account ID:</strong> {earning.accountId || "N/A"}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Recurring:</strong>{" "}
-                        <Chip label={earning.recurring ? "Yes" : "No"} size="small" />
-                      </Typography>
-                    </CardContent>
-                    <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <MDButton
-                        variant="text"
-                        onClick={() => handleEdit(earning)}
-                        sx={{
-                          background:
-                            "linear-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%)",
-                          color: "#000",
-                          fontWeight: "bold",
-                          borderRadius: "8px",
-                          padding: "12px 24px",
-                        }}
-                      >
-                        <Icon fontSize="medium">edit</Icon>&nbsp;Edit
-                      </MDButton>
-                      <MDButton
-                        variant="text"
-                        color="error"
-                        onClick={() => {
-                          setDeleteId(earning.id);
-                          setConfirmDeleteOpen(true);
-                        }}
-                        sx={{ ml: 1, padding: "12px 24px" }}
-                      >
-                        <Icon fontSize="medium">delete</Icon>&nbsp;Delete
-                      </MDButton>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
           </Card>
         </Grid>
       </Grid>
-
-      {/* Earning Form Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>{editingEarning ? "Edit Earning" : "Add Earning"}</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Earning ID"
-                value={earningId}
-                onChange={(e) => setEarningId(e.target.value)}
-                fullWidth
-                margin="dense"
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                select
-                label="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                fullWidth
-                margin="dense"
-                required
-              >
-                {categories.map((cat) => (
-                  <MenuItem key={cat} value={cat}>
-                    {cat}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                type="number"
-                label="Amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                fullWidth
-                margin="dense"
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                type="date"
-                label="Date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                fullWidth
-                margin="dense"
-                required
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                fullWidth
-                margin="dense"
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Project ID"
-                value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
-                fullWidth
-                margin="dense"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Account ID"
-                value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
-                fullWidth
-                margin="dense"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={recurring}
-                    onChange={(e) => setRecurring(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Recurring Earning"
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Confirm Delete Dialog */}
-      <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
-        <DialogTitle>Want to delete earning data?</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setConfirmDeleteOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} color="error">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Confirm Update Dialog */}
-      <Dialog open={confirmUpdateOpen} onClose={() => setConfirmUpdateOpen(false)}>
-        <DialogTitle>Want to save details?</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setConfirmUpdateOpen(false)}>Cancel</Button>
-          <Button onClick={confirmUpdate} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </MDBox>
   );
 };
 
-export default ManageEarnings;
+export default ManageEarning;

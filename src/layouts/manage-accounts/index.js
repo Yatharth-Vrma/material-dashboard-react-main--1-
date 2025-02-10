@@ -11,13 +11,13 @@ import {
   CardContent,
   CardActions,
   Typography,
-  Box,
   Chip,
   MenuItem,
   InputAdornment,
-  Select,
   FormControl,
   InputLabel,
+  Select,
+  Box,
 } from "@mui/material";
 import { db } from "../manage-employee/firebase";
 import { collection, addDoc, getDocs, doc, updateDoc } from "firebase/firestore";
@@ -54,7 +54,6 @@ const ManageAccount = () => {
   const [contractEndDate, setContractEndDate] = useState("");
   const [revenue, setRevenue] = useState("");
   const [expenses, setExpenses] = useState("");
-  const [profitMargin, setProfitMargin] = useState("");
   const [projects, setProjects] = useState([]);
   const [clients, setClients] = useState([]);
   const [status, setStatus] = useState("");
@@ -113,9 +112,12 @@ const ManageAccount = () => {
     setIndustry(account.industry || "");
     setRevenue(account.revenue || "");
     setExpenses(account.expenses || "");
+<<<<<<< HEAD
     setProfitMargin(account.profitMargin || "");
     setEmail(account.email || ""); // corrected from client.email to account.email
     setPhone(account.phone || ""); // corrected from client.phone to account.phone
+=======
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
     setProjects(account.projects || []);
     setClients(account.clients || []);
     setStatus(account.status || "");
@@ -132,12 +134,18 @@ const ManageAccount = () => {
     const accountId = editingAccount
       ? editingAccount.accountId
       : `ACC-${Math.floor(1000 + Math.random() * 9000)}`;
+<<<<<<< HEAD
     const contractId = editingAccount
       ? editingAccount.contractId
       : `CON-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const calculatedProfitMargin =
       revenue && expenses ? ((Number(revenue) - Number(expenses)) / Number(revenue)) * 100 : 0;
+=======
+    
+    // Calculate profit margin based on revenue and expenses
+    const calculatedProfitMargin = revenue && expenses ? ((revenue - expenses) / revenue) * 100 : 0;
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
 
     const newAccount = {
       accountId,
@@ -147,7 +155,7 @@ const ManageAccount = () => {
       industry,
       revenue,
       expenses,
-      profitMargin: calculatedProfitMargin.toFixed(2),
+      profitMargin: calculatedProfitMargin.toFixed(2), // Store calculated profit margin
       projects,
       contractStartDate,
       contractEndDate,
@@ -170,8 +178,11 @@ const ManageAccount = () => {
     handleClose();
   };
 
+<<<<<<< HEAD
   // Removed custom textFieldStyle from the form fields.
 
+=======
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
   const resetForm = () => {
     setName("");
     setIndustry("");
@@ -179,7 +190,6 @@ const ManageAccount = () => {
     setPhone("");
     setRevenue("");
     setExpenses("");
-    setProfitMargin("");
     setProjects([]);
     setClients([]);
     setContractStartDate("");
@@ -254,6 +264,7 @@ const ManageAccount = () => {
                             <strong>ID:</strong> {account.accountId}
                           </MDTypography>
                           <MDTypography variant="body2" color="textSecondary">
+<<<<<<< HEAD
                             <strong>Email:</strong> {account.email}
                           </MDTypography>
                           <MDTypography variant="body2" color="textSecondary">
@@ -275,6 +286,37 @@ const ManageAccount = () => {
                             {account.contractEndDate
                               ? formatTimestamp(account.contractEndDate)
                               : "Ongoing"}
+=======
+                            <strong>Industry:</strong> {account.industry}
+                          </MDTypography>
+                          <MDTypography variant="body2" color="textSecondary">
+                            <strong>Revenue:</strong> ${account.revenue}
+                          </MDTypography>
+                          <MDTypography variant="body2" color="textSecondary">
+                            <strong>Expenses:</strong> ${account.expenses}
+                          </MDTypography>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <MDTypography variant="body2" color="textSecondary">
+                            <strong>Profit Margin:</strong> {account.profitMargin}%
+                          </MDTypography>
+                          <MDTypography variant="body2" color="textSecondary">
+                            <strong>Projects:</strong>{" "}
+                            {Array.isArray(account.projects)
+                              ? account.projects.join(", ")
+                              : "No projects assigned"}
+                          </MDTypography>
+                          <MDTypography variant="body2" color="textSecondary">
+                            <strong>Clients:</strong>{" "}
+                            {Array.isArray(account.clients)
+                              ? account.clients
+                                  .map((clientId) => {
+                                    const client = clientList.find((c) => c.id === clientId);
+                                    return client ? client.name : clientId;
+                                  })
+                                  .join(", ")
+                              : "No clients assigned"}
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
                           </MDTypography>
                           <MDTypography variant="body2" color="textSecondary">
                             <strong>Status:</strong>{" "}
@@ -292,6 +334,7 @@ const ManageAccount = () => {
                           </MDTypography>
                         </Grid>
                       </Grid>
+<<<<<<< HEAD
                       <Grid container spacing={2} mt={1}>
                         <Grid item xs={12} md={4}>
                           <MDTypography variant="body2" color="textSecondary">
@@ -309,6 +352,8 @@ const ManageAccount = () => {
                           </MDTypography>
                         </Grid>
                       </Grid>
+=======
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
                     </CardContent>
                     <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <MDButton
@@ -338,8 +383,12 @@ const ManageAccount = () => {
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>{editingAccount ? "Edit Account" : "Add Account"}</DialogTitle>
         <DialogContent sx={{ py: 2, padding: "30px" }}>
+<<<<<<< HEAD
           <Grid container spacing={2} sx={{ mt: 1 }}>
             {/* Removed Client ID field */}
+=======
+          <Grid container spacing={2}>
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -350,6 +399,7 @@ const ManageAccount = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+<<<<<<< HEAD
                 fullWidth
                 label="Email"
                 value={email}
@@ -366,6 +416,8 @@ const ManageAccount = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+=======
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
                 select
                 fullWidth
                 label="Industry"
@@ -379,7 +431,11 @@ const ManageAccount = () => {
                 ))}
               </TextField>
             </Grid>
+<<<<<<< HEAD
             <Grid item xs={12} md={4}>
+=======
+            <Grid item xs={12} md={6}>
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
               <TextField
                 fullWidth
                 type="number"
@@ -387,6 +443,7 @@ const ManageAccount = () => {
                 value={revenue}
                 onChange={(e) => setRevenue(e.target.value)}
                 InputProps={{
+<<<<<<< HEAD
                   startAdornment:
                     revenue.trim() === "" ? (
                       <InputAdornment position="start">$</InputAdornment>
@@ -395,6 +452,13 @@ const ManageAccount = () => {
               />
             </Grid>
             <Grid item xs={12} md={4}>
+=======
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
               <TextField
                 fullWidth
                 type="number"
@@ -402,6 +466,7 @@ const ManageAccount = () => {
                 value={expenses}
                 onChange={(e) => setExpenses(e.target.value)}
                 InputProps={{
+<<<<<<< HEAD
                   startAdornment:
                     expenses.trim() === "" ? (
                       <InputAdornment position="start">$</InputAdornment>
@@ -444,6 +509,12 @@ const ManageAccount = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+=======
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
+              />
+            </Grid>
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Projects</InputLabel>
@@ -525,7 +596,11 @@ const ManageAccount = () => {
 
       {/* Confirm Update Dialog */}
       <Dialog open={confirmUpdateOpen} onClose={() => setConfirmUpdateOpen(false)}>
+<<<<<<< HEAD
         <DialogTitle>Are you sure you want to save changes?</DialogTitle>
+=======
+        <DialogTitle>Want to save details?</DialogTitle>
+>>>>>>> b288dd59794f9c9ed4dd313a55e85c31eb257efe
         <DialogActions>
           <Button onClick={() => setConfirmUpdateOpen(false)}>Cancel</Button>
           <Button onClick={confirmUpdate} color="primary">
